@@ -6,11 +6,9 @@
 #include <QDate>
 #include <QString>
 #include <QChar>
-#include <string>
 #include <QTextEdit>
 #include <QLabel>
-#include <QRegExp>
-#include <QRegExpValidator>
+
 
 namespace Ui {
 class DialogNovaOsoba;
@@ -24,10 +22,8 @@ public:
     explicit DialogNovaOsoba(QWidget *parent = 0);
     ~DialogNovaOsoba();
 
-    bool popuniPodatke(QString &ime, QString &prezime, QString &pol, QDate &rodjenje, QDate &smrt);
+    bool popuniPodatke(QString &ime, QString &prezime, QChar &pol, QDate &rodjenje, QDate &smrt);
 
-    bool popuniPodatke(std::string &ime, std::string &prezime, char &pol,
-                       std::string &rodjenje, std::string &smrt);
     void retranslate();
 private Q_SLOTS:
     void promenaUnosa();

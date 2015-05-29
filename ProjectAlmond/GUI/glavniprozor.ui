@@ -107,27 +107,17 @@
      <addaction name="aNemacki"/>
      <addaction name="aSpanski"/>
     </widget>
-    <addaction name="aMreza"/>
-    <addaction name="aSamoKrv"/>
     <addaction name="aPreciGore"/>
     <addaction name="separator"/>
     <addaction name="mJezik"/>
-    <addaction name="separator"/>
-    <addaction name="aAnimacije"/>
    </widget>
    <widget class="QMenu" name="mPrikaz">
     <property name="title">
      <string>Prikaz</string>
     </property>
-    <addaction name="aTema"/>
     <addaction name="aAlati"/>
     <addaction name="aInformacije"/>
     <addaction name="actionPretraga"/>
-   </widget>
-   <widget class="QMenu" name="mPomoc">
-    <property name="title">
-     <string>Pomoc</string>
-    </property>
    </widget>
    <widget class="QMenu" name="mOProgramu">
     <property name="title">
@@ -138,7 +128,6 @@
    <addaction name="mPodesavanja"/>
    <addaction name="mPrikaz"/>
    <addaction name="mOProgramu"/>
-   <addaction name="mPomoc"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="aNovoStablo">
@@ -283,6 +272,11 @@
    </property>
    <property name="text">
     <string>Español</string>
+   </property>
+  </action>
+  <action name="aKljucna">
+   <property name="text">
+    <string>Dodajte kjucnu osobu</string>
    </property>
   </action>
  </widget>

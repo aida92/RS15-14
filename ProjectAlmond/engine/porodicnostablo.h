@@ -11,6 +11,7 @@
 #include <QString>
 #include <QFile>
 #include <iostream>
+#include <QPointF>
 
 /**
  * @brief The PorodicnoStablo class sluzi za pamcenje podataka o povezanosti clanova stabla, kao i njihovo indeksiranje.
@@ -26,28 +27,11 @@ public:
 
     Osoba * KljucnaOsoba();
 
-
     //dodaje novu osobu u stablo,ocekuje se da posle poziva sledi i poziv za dodavanje deteta ili braka, da bi stablo bilo povezano u svakom momentu!!!
-    short int DodajOsobu(const QString &ime, const QString &prezime, const QString &pol, const QDate rodjenje, const QDate smrt, bool krvniSrodnik);
+    short int DodajOsobu(const QString &ime, const QString &prezime, const QChar &pol, const QDate rodjenje, const QDate smrt, bool krvniSrodnik);
     //slicno, samo pravi NN lice
     short int DodajNNLice(bool krvniSrodnik);
 
-    /*
-    na ovo sam mislila
-    short int DodajBS(short int sifraOsobe, std::string trivija="")
-    {
-        Osoba* osoba = NadjiOsobuSifrom(sifraOsobe);
-        if (osoba->RoditeljskiOdnos() == nullptr)
-            {
-                ne znam,
-                short int sifraBraka = DodajBrak(DodajNNLice(), DodajNNLice());
-                DodajDete(sifraOsobe, sifraBraka); -- ova nasa kojoj dodajemo brata, ne ide ovako, ali nebitno
-                return DodajDete(sifraBraka); -- onaj novi
-            }
-        return DodajDete(osoba->RoditeljskiOdnos().Sifra(), trivija);
-    }
-    Mislim da nije problem da ostavimo opciju brat sestra u GUI-u, nije tesko, a cini mi se da bi bilo zgodno imati
-    */
 
     //dodaje relaciju dete, od braka do osobe
     short int DodajDete(const short sifraBraka, const short sifraOsobe, const QString &trivija="");
@@ -82,11 +66,11 @@ public:
     std::vector<short>* KomeJeSveRodjendan(const QDate& datum);
 
     //----GETTERI ZA INDEKSE----//
-    std::map<short, Osoba*> Osobe();
-    std::map<short, Brak*> Brakovi();
-    std::map<short, Dete*> Deca();
-    const std::multimap<short, short>& OsobaBrak() const;
-    const std::multimap<short,short>& BrakDeca()const;
+    std::map<short, Osoba*> &Osobe();
+    std::map<short, Brak *> &Brakovi();
+    std::map<short, Dete*> &Deca();
+    std::multimap<short, short>& OsobaBrak();
+    std::multimap<short,short>& BrakDeca();
     std::vector<int> Nivoi();
     //----GETTERI ZA INDEKSE----//
     bool ProcitajFajl(const QString &imeFajla);//citanje fajla
@@ -109,7 +93,18 @@ public:
 
     bool jeBratSestraOd(short sifraPrve,short sifraDruge);
 
+    //nesto za ucitavanje//
+    void zapamtiPozicijeOsoba(std::map<short, QPointF> &mapa);
+    void zapamtiPozicijeBrakova(std::map<short, QPointF> &mapa);
+    std::map<short, QPointF>& vratiPozicijeOsoba();
+    std::map<short, QPointF>& vratiPozicijeBrakova();
+
+
+
 private:
+    std::map<short, QPointF> mapaOsobe;//za ucitavnje
+    std::map<short, QPointF> mapaBrakovi;// i iscitavanje
+
     Osoba *_kljucnaOsoba;//osoba cije se porodicno stablo kreira
 
     //-------------------INDEKSI------------------------//
@@ -122,22 +117,19 @@ private:
     std::map<short int, Dete* > _indeksSifraDete;//mapa koja vezuje sifru deteta za konkretan relacioni objekat dete
     //-----OVE STALNO AZURIRAMO------//
     //-----OVE DOLE NE!!!! zato uvek konsultovati prva tri------//
-    //mozda da umesto brisanja iz ovih uvedemo ivalidaciju, tipa promenimo vrednost_sifru na -1... //
-    //uvesti periodicno osvezavanje ovih indeksa?...//
     std::multimap<short int, short int> _indeksOsobaBrak;//mapa koja vezuje sifru osobe sa siframa njenih brakova
     std::multimap<short int, short int> _indeksBrakDeca;//mapa koja vezuje sifru braka sa siframa njegove dece(ali osoba!)
-    //std::multimap<QDate, short> _indeksRodjenje;//mapa koja vezuje datum i sve osobe rodjene tog dana !Da li nam i ovaj treba?
     std::multimap<int, short> _indeksRodjendan;//mapa vezuje dan [1,366] sa sifrom osobe rodjenom tog dana
 
 
     //--------------------INDEKSI------------------------//
 
     void InicijalizujSveStrukture();
-    void SpaliCeloStablo();
-    void ObrisiBrakove(short sifra, bool iSupruznike);
-    void ObrisiDecu(short sifra);
+    void SpaliCeloStablo();//kao destruktor, unistava sve iz stabla ali ne i njega
+    void ObrisiBrakove(short sifra, bool iSupruznike);//ako je krvni srodnik, brise mu supruznika; ako nije, brise bas brak
+    void ObrisiDecu(short sifra);//poziva brisanje svakog deteta date osobe
 
-    //std::map<short, int> _nivoOsoba; //vezuje nivo, pocev od nultog (korena), sa brojem krvnih srodnika u njemu
+
     std::vector<int> _nivoi;
 
 signals:
@@ -148,6 +140,7 @@ signals:
 public Q_SLOTS:
     void azurirajIndeksRodj(const QDate &stari, const QDate &novi, const short sifra);
     std::vector<short> sifreNaPutuOdOsobeDoOsobe(int sifraPocetne,int sifraTrazene);
+
 
 };
 

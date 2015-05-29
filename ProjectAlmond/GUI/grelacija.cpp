@@ -10,11 +10,12 @@ GRelacija::GRelacija(short sifra, QPointF prva, QPointF druga, bool brak)
 GRelacija::~GRelacija()
 {}
 
-//QPainterPath GRelacija::shape() const
-//{
-//    QPainterPath putanja;
-//    putanja.
-//}
+QPainterPath GRelacija::shape() const
+{
+    QPainterPath putanja;
+    putanja.addRect(-30, -30, 60, 60);
+    return putanja;
+}
 
 QRectF GRelacija::boundingRect() const
 {
@@ -24,9 +25,12 @@ QRectF GRelacija::boundingRect() const
 
 void GRelacija::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
     painter->setPen(Qt::darkGreen);
     painter->drawLine(mapFromScene(_prva), mapFromScene(_druga));
     painter->setBrush(Qt::darkGreen);
+    painter->setRenderHint(QPainter::Antialiasing,false);
     QRect okvir(-30, -30, 60, 60);
     QPixmap slika;
     if(_brak)
@@ -63,6 +67,7 @@ void GRelacija::ukloniSeSaScene(short sifra)
         return;
     if (scene() != 0)
         scene()->removeItem(this);
+    emit obrisiMe(_sifra);
     deleteLater();
 }
 

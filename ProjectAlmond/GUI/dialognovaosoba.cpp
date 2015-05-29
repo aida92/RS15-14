@@ -1,7 +1,7 @@
 #include "GUI/dialognovaosoba.h"
 #include "ui_dialognovaosoba.h"
-//#include <QRegExp>
-//#include <QRegExpValidator>
+#include <QRegExp>
+#include <QRegExpValidator>
 
 DialogNovaOsoba::DialogNovaOsoba(QWidget *parent) :
     QDialog(parent),
@@ -32,43 +32,17 @@ void DialogNovaOsoba::retranslate()
     cancel = new QPushButton(tr("Ponisti"));
 
 }
-bool DialogNovaOsoba::popuniPodatke(QString &ime, QString &prezime, QString &pol, QDate &rodjenje, QDate &smrt)
+bool DialogNovaOsoba::popuniPodatke(QString &ime, QString &prezime, QChar &pol, QDate &rodjenje, QDate &smrt)
 {
     if (ui->checkBox->isChecked())
         return false;
     ime = ui->unosIme->text();
     prezime = ui->unosPrezime->text();
-    pol = ui->unosPol->text();
+    pol = ui->unosPol->text().at(0).toUpper();
     if(ui->chkNepoznatDR->isChecked() == false)
         rodjenje = ui->unosRodjenje->date();
     if (ui->chkSmrt->isChecked() == false)
            smrt = ui->UnosSmrt->date();
-    return true;
-}
-
-bool DialogNovaOsoba::popuniPodatke(std::string &ime, std::string &prezime, char &pol,
-                                    std::string &rodjenje, std::string &smrt)
-{
-    if (ui->checkBox->isChecked())
-        return false;
-
-    QString _ime, _prezime, _pol;
-    QDate _rodjenje, _smrt;
-
-    popuniPodatke(_ime, _prezime, _pol, _rodjenje, _smrt);
-
-    ime = _ime.QString::toStdString();
-    prezime = _prezime.QString::toStdString();
-    pol = _pol.toStdString().c_str()[0];
-    if(!_rodjenje.isValid())
-        rodjenje="";
-    else
-        rodjenje = _rodjenje.toString("dd.MM.yyyy.").toStdString();
-    if (!_smrt.isValid())
-        smrt = "";
-    else
-        smrt = _smrt.toString("dd.MM.yyyy.").toStdString();
-
     return true;
 }
 
@@ -82,9 +56,7 @@ void DialogNovaOsoba::promenaUnosa()
 
 void DialogNovaOsoba::popuniDugmice()
 {
-    //ok = new QPushButton(tr("OK"));
     ok->setEnabled(false);
-    //cancel = new QPushButton(tr("Ponisti"));
 
     ui->buttonBox->addButton(ok, QDialogButtonBox::AcceptRole);
     ui->buttonBox->addButton(cancel, QDialogButtonBox::RejectRole);

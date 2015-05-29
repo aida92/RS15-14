@@ -16,10 +16,7 @@ Dete::Dete(const Dete &drugo)
 {}
 
 Dete::~Dete()
-{
-    //std::cout << "brise se dete " << Sifra() << std::endl;
-    _vecSeBrisem=true;
-}
+{}
 
 short int Dete::Sifra()
 {
@@ -39,23 +36,12 @@ short Dete::SifraRoditeljskogOdnosa()
 const QString &Dete::Trivija() const
 {
     return _trivija;
-}/*
-QDate& Dete::DatumUsvajanja()
-{
-    return _datumUsvajanja;
 }
-*/
+
 void Dete::postaviSledecuSifru(int sifra)
 {
     _sledecaSifra=sifra;
 }
-
-
-bool Dete::VecSeBrisem()
-{
-    return _vecSeBrisem;
-}
-
 
 QDataStream& operator<<(QDataStream &out,Dete& dete)
 {
@@ -65,7 +51,6 @@ QDataStream& operator<<(QDataStream &out,Dete& dete)
     out << dete._trivija;
     return out;
 }
-
 
 QDataStream& operator>>(QDataStream &in,Dete& dete)
 {

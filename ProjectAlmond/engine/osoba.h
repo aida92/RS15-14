@@ -11,34 +11,50 @@ class Osoba
 {
 public:
 
-    Osoba(); //kreira osobu bez icega, radi ucitavanja
-    Osoba(bool krvniSrodnik); //kreira N.N lice
-    Osoba(const QString &ime, const QString &prezime, const QChar &pol, const QDate &rodjenje, const QDate &smrt, bool krvniSrodnik);
-    //Osoba(std::string ime, std::string prezime, char pol, bool krvniSrodnik); //kreira validnu osobu, ali bez pokazivaca za roditelje
-    Osoba(const Osoba& druga);//samo podatke, ne i veze!!!
+    /*!
+     * \brief Osoba kreira osobu bez ičega, radi učitavanja
+     */
+    Osoba();
 
-    ~Osoba(); //uklanja osobu
+    /*!
+     * \brief Osoba kreira N.N. lice
+     */
+    Osoba(bool krvniSrodnik);
+
+    Osoba(const QString &ime, const QString &prezime, const QChar &pol, const QDate &rodjenje, const QDate &smrt, bool krvniSrodnik);
+
+    /*!
+     * \brief Osoba kopira samo podatke, ne i veze
+     * \param druga
+     */
+    Osoba(const Osoba& druga);
+
+    ~Osoba();
 
 
     //----geteri i seteri------//
-    short int Sifra() const;//vraca sifru
+    short int Sifra() const;//vraća šifru
 
-    const QString &Ime() const;//vraca ime
+    const QString &Ime() const;//vraća ime
 
-    const QString& Prezime() const;//vraca prezime
+    const QString& Prezime() const;//vraća prezime
 
-    const QString ImePrezime() const;//cini mi se da je korisno
+    const QString ImePrezime() const;//vraća ime i prezime spojeno
 
-    const QChar& Pol() const;
+    const QChar& Pol() const;//vraća pol osobe
 
-    const QDate& DatumRodjenja() const; //vraca datum rodjenja
+    const QDate& DatumRodjenja() const; //vraća datum rođenja
 
-    const QDate& DatumSmrti() const; //vraca datum smrti
+    const QDate& DatumSmrti() const; //vraća datum smrti
 
-    bool JeKrvniSrodnik() const; //vraca da li je osoba u krvnom srodstvu sa kljucnom osobom
+    bool JeKrvniSrodnik() const; //vraća da li je osoba u krvnom srodstvu sa ključnom osobom
 
-    short SifraRoditeljskeVeze() const;//vraca sifru braka ove osobe, Bozidare, samo za tebe :)
+    short SifraRoditeljskeVeze() const;//vraća šifru braka ove osobe
 
+    /*!
+     * \brief postaviSledecuSifru postavlja sledeću šifru koja će biti upotrebljavana
+     * \param sifra
+     */
     static void postaviSledecuSifru(int sifra);
 
     void PromeniIme(const QString &ime);
@@ -46,27 +62,27 @@ public:
     void PromeniPol(const QChar &pol);
     void PromeniDatumRodjenja(const QDate &datum);
     void PromeniDatumSmrti(const QDate &datum);
-    void PostaviRoditeljskuSifru(const short sifra);//racunamo da se ovo radi jednaput
+    void PostaviRoditeljskuSifru(const short sifra);
+    bool JeNepoznata();
     //----geteri i seteri------//
 
-    //---metodi korisni u upotrebi---//
-    void PretvoriUNepoznatu();//pretvara podatke date osobe u nepoznatu, ali cuva sve veze koje je ona imala
-
-    //---metodi korisni u upotrebi---//
+    //----metodi potrebni za brisanje----//
+    /*!
+     * \brief VecSeBrisem proverava da li je već pozvan destruktor, da ne bi dva puta oslobađali
+     * \return da li je sve prošlo uspešno
+     */
+    bool VecSeBrisem();
 
     //----metodi potrebni za brisanje----//
-      bool VecSeBrisem(); //proverava da li je vec pozvan destruktor, da ne bi dva puta oslobadjali
-    //void PreskociRazvezivanje();
-    //----metodi potrebni za brisanje----//
 
-//----metodi za citanje i pisanje ----//
+    //----metodi za čitanje i pisanje ----//
 
     friend QDataStream& operator<<(QDataStream& out,Osoba& osoba);
     friend QDataStream& operator>>(QDataStream& out,Osoba& osoba);
 
-    //----metodi za citanje i pisanje ----//
+    //----metodi za čitanje i pisanje ----//
 
-    //----rasporedjivanje----//
+    //----raspoređivanje----//
     short Nivo() const;
     void Nivo(short nivo);
 
@@ -86,10 +102,8 @@ private:
     bool _vecSeBrisem=false;
     bool _preskociRazvezivanje=false;
     //----osnovni podaci----//
-    //--------------------------------------------------------------//
-    //----napredni podaci----//
 
-    //----napredni podaci----//
+
 
     short _nivo = -1;
 

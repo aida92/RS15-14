@@ -95,7 +95,7 @@ void DijalogIzmenaOsobe::primeniIzmene()
     if (!ui->chkSmrt->isVisible() || ui->chkSmrt->isChecked())
         _osoba->PromeniDatumSmrti(ui->UnosSmrt->date());
     if (ui->unosPol->isModified())
-        _osoba->PromeniPol(ui->unosPol->text().at(0));
+        _osoba->PromeniPol(ui->unosPol->text().at(0).toUpper());
 }
 
 void DijalogIzmenaOsobe::on_chkRodjenje_stateChanged(int arg1)

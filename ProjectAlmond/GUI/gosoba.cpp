@@ -2,8 +2,9 @@
 #include <QGraphicsScene>
 
 GOsoba::GOsoba(short sifra, QString ime_prezime)
-    :_sifra(sifra), _sirina(100), _visina(40), _ime(ime_prezime)
+    :_sifra(sifra), _sirina(100), _visina(40), _ime(ime_prezime),_ukljuceniFlegovi(0)
 {
+    setAcceptHoverEvents(true);
 }
 
 GOsoba::~GOsoba()
@@ -17,29 +18,91 @@ QRectF GOsoba::boundingRect() const
     return QRectF(-_sirina/2-d, -_visina/2-d, _sirina+d, _visina+d);
 }
 
-//QPainterPath gOsoba::shape() const
-//{
-//    return QPainterPath();
-//}
 
 void GOsoba::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    //samo da se vidi nesto
-    //QColor color(Qt::darkGreen);
+    Q_UNUSED(option)
+    Q_UNUSED(widget)
+
+   if(!(_ukljuceniFlegovi & SELEKTOVANA))//nije selektovana
+   {
+       _osnovnaBoja=Qt::darkGreen;
+
+       if(_ukljuceniFlegovi& NEPOZNATA)
+       {
+           _bojaTeksta=Qt::green;
+       }
+       else if(_ukljuceniFlegovi& ZENSKA)
+       {
+           _bojaTeksta=QColor(220,50,50);
+       }
+       else//muska
+       {
+            _bojaTeksta=QColor(50,50,220);
+       }
+
+       if(_ukljuceniFlegovi& KORENA)
+       {
+           _osnovnaBoja=QColor(186,122,69);
+           _bojaTeksta=(_ukljuceniFlegovi& ZENSKA)?QColor(240,200,200):QColor(200,200,240);
+       }
+
+
+
+   }
+   else// selektovana
+   {
+       _osnovnaBoja=Qt::green;
+       if(_ukljuceniFlegovi& NEPOZNATA)
+       {
+           _bojaTeksta=Qt::darkGreen;
+       }
+       else if(_ukljuceniFlegovi& ZENSKA)
+       {
+           _bojaTeksta=QColor(220,50,50);
+       }
+
+       else//muska
+       {
+            _bojaTeksta=QColor(50,50,220);
+       }
+
+       if(_ukljuceniFlegovi& KORENA)
+       {
+           _osnovnaBoja=QColor(128,76,34);
+           _bojaTeksta=(_ukljuceniFlegovi& ZENSKA)?QColor(220,180,180):QColor(180,180,220);
+       }
+   }
+   if(_ukljuceniFlegovi& ODABRANA)
+   {
+    _osnovnaBoja=Qt::yellow;
+   }
+
     painter->setBrush(_osnovnaBoja);
     QRectF rect(-_sirina/2, -_visina/2, _sirina, _visina);
     painter->setRenderHint(QPainter::Antialiasing,false);
     painter->drawRoundedRect( rect.translated(0.5,0.5), 3.0, 3.0 );
-    //painter->drawRoundedRect(-40, -20, 80, 40, 2, 2);
-    painter->setPen(Qt::green);
-    //painter->drawText(-40, 0, _ime);
-    painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, _ime);//doterati malo
+    painter->setPen(_bojaTeksta);
+    painter->drawText(rect, Qt::AlignCenter | Qt::TextWordWrap, _ime);
 }
 
 int GOsoba::type() const
 {
-    //ovo da bi qgraphicscast funkcionisao
     return Type;
+}
+
+void GOsoba::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    Q_UNUSED(event)
+    dodajStil(SELEKTOVANA);
+    update(this->boundingRect());
+}
+
+void GOsoba::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    Q_UNUSED(event)
+    oduzmiStil(SELEKTOVANA);
+    update(this->boundingRect());
 }
 
 short GOsoba::Sifra() const
@@ -57,23 +120,17 @@ void GOsoba::obavestiRelacije()
     emit pomerilaSe(pos());
 }
 
-void GOsoba::promeniStil(Stil stil)
+void GOsoba::dodajStil(Stil stil)
 {
-    _ukljuceniFlegovi |= stil;//TO DO
-    //napraviti .css za ovo
-    switch (stil)
-    {
-    case SELEKTOVANA:
-            _osnovnaBoja = Qt::darkYellow;
-            break;
-    case POKOJNA:
-            _osnovnaBoja = Qt::gray;
-            break;
-    case OBICNA:
-    default:
-            _osnovnaBoja = Qt::darkGreen;
-            break;
-    }
+    _ukljuceniFlegovi|= stil;
+    update(this->boundingRect());
+
+}
+void GOsoba::oduzmiStil(Stil stil)
+{
+    _ukljuceniFlegovi &= ~stil;
+    update(this->boundingRect());
+
 }
 
 void GOsoba::skloniSeSaScene(short sifra)

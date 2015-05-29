@@ -8,38 +8,35 @@
 class Brak
 {
 public:
+    /*!
+     * \brief Brak konstruktor bez argumenata, koji ne radi ništa
+     */
     Brak();
+
+    /*!
+     * \brief Brak kreira objekat tipa Brak
+     * \param sifraNase
+     * \param sifraTudje
+     * \param trivija
+     */
     Brak(const short sifraNase, const short sifraTudje, const QString &trivija);
+
     Brak(const Brak& drugi);
     ~Brak();
 
     //----geteri i seteri------//
+
     short int Sifra();
     short SifraNase();
     short SifraTudje();
-    const QString& Trivija() const;/*
-    QDate& DatumUpoznavanja();
-    QDate& DatumVeze();
-    QDate& DatumRaskida();
-    QDate& DatumVeridbe();
-    QDate& DatumVencanja();
-*/
+    const QString& Trivija() const;
+
     //----geteri i seteri------//
+    /*!
+     * \brief postaviSledecuSifru menja statički podatak o tome koja će sledeća šifra biti upotrebljena
+     * \param sifra
+     */
     static void postaviSledecuSifru(int sifra);
-
-    //---metodi korisni u upotrebi---//
-
-    //OVI JOS NE RADE!!!!
-    bool UVezi();
-    bool Vereni();
-    bool Vencani();
-    bool Rastavljeni();
-    //---metodi korisni u upotrebi---//
-
-    //----metodi potrebni za brisanje----//
-    bool VecSeBrisem();
-    void PreskociRazvezivanje();
-    //----metodi potrebni za brisanje----//
 
     //----metodi potrebni za citanje i pisanje----//
     friend QDataStream& operator<<(QDataStream &out,Brak& brak);
@@ -55,13 +52,7 @@ private:
     short _sifraNase;
     short _sifraTudje;
     QString _trivija;
-    /* QDate _datumUpoznavanja;
-    QDate _datumVeze;
-    QDate _datumVeridbe;
-    QDate _datumVencanja;
-    QDate _datumRaskida;*/
-    bool _vecSeBrisem=false;
-    bool _preskociRazvezivanje=false;
+
 
     short _nivo = -1;
 };

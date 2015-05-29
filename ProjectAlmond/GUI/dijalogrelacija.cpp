@@ -32,8 +32,6 @@ void DijalogRelacija::popuniPodatke(QString &trivija)
 
 void DijalogRelacija::popuniDugmice()
 {
-  //  ok = new QPushButton(tr("OK"));
-    //cancel = new QPushButton(tr("Ponisti"));
 
     ui->buttonBox->addButton(ok, QDialogButtonBox::AcceptRole);
     ui->buttonBox->addButton(cancel, QDialogButtonBox::RejectRole);

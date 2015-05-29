@@ -8,8 +8,8 @@
 short int Osoba::_sledecaSifra=0;
 
 Osoba::Osoba()
-    :_sifra(),_nepoznata(),_ime(),_prezime(),
-    _pol(),_datumRodjenja(),_datumSmrti(),_krvniSrodnik()
+    :_sifra(),_nepoznata(false),_ime(),_prezime(),
+    _pol(),_datumRodjenja(),_datumSmrti(),_krvniSrodnik(true)
 {
     _sifraRoditeljskeVeze = -1;
 }
@@ -59,7 +59,7 @@ const QString &Osoba::Prezime() const
     return _prezime;
 }
 
-//vraca vezano ime i prezime, moze biti korisno za GUI
+
 const QString Osoba::ImePrezime() const
 {
     QString novi(_ime);
@@ -121,21 +121,18 @@ void Osoba::PromeniDatumSmrti(const QDate &datum)
 
 void Osoba::PostaviRoditeljskuSifru(const short sifra)
 {
-    //>if _sifraRoditeljskeVeze vec >= 0 da ne menjamo, ne znam, videcemo
+
     _sifraRoditeljskeVeze = sifra;
+}
+
+bool Osoba::JeNepoznata()
+{
+    return _nepoznata;
 }
 
 void Osoba::postaviSledecuSifru(int sifra)
 {
     _sledecaSifra=sifra;
-}
-
-void Osoba::PretvoriUNepoznatu()
-{
-    _ime="N.";
-    _prezime="N.";
-    _pol='?';
-    _nepoznata=true;
 }
 
 bool Osoba::VecSeBrisem()
@@ -164,6 +161,7 @@ QDataStream& operator<<(QDataStream &out,Osoba& osoba)
     out << osoba._datumRodjenja.toString("dd.MM.yyyy.");
     out << osoba._datumSmrti.toString("dd.MM.yyyy.");
     out << osoba._krvniSrodnik;
+    out << (qint32)osoba._nivo;
     return out;
 }
 
@@ -183,7 +181,8 @@ QDataStream& operator>>(QDataStream &out,Osoba& osoba)
     out >> datum;
     osoba._datumSmrti = QDate::fromString(datum, "dd.MM.yyyy.");
     out >> osoba._krvniSrodnik;
-
+    out >> sif;
+    osoba._nivo = (short)sif;
     return out;
 }
 

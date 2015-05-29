@@ -18,8 +18,7 @@ Brak::Brak(const Brak &drugi)
 
 Brak::~Brak()
 {
-    //std::cout << "brise se brak " << Sifra() << std::endl;
-    _vecSeBrisem=true;
+
 }
 
 short int Brak::Sifra()
@@ -41,59 +40,10 @@ const QString &Brak::Trivija() const
     return _trivija;
 }
 
-/*
-QDate& Brak::DatumUpoznavanja()
-{
-    return _datumUpoznavanja;
-}
-QDate& Brak::DatumVeze()
-{
-    return _datumVeze;
-}
-QDate& Brak::DatumVeridbe()
-{
-    return _datumVeridbe;
-}
-QDate& Brak::DatumVencanja()
-{
-    return _datumVencanja;
-}
-QDate& Brak::DatumRaskida()
-{
-    return _datumRaskida;
-}
-*/
 
 void Brak::postaviSledecuSifru(int sifra)
 {
     _sledecaSifra=sifra;
-}
-
-bool Brak::UVezi()
-{
-    return false;
-}
-bool Brak::Vereni()
-{
-    return false;
-}
-bool Brak::Vencani()
-{
-    return false;
-}
-bool Brak::Rastavljeni()
-{
-    return false;
-}
-
-bool Brak::VecSeBrisem()
-{
-    return _vecSeBrisem;
-}
-
-void Brak::PreskociRazvezivanje()
-{
-    _preskociRazvezivanje=true;
 }
 
 short Brak::Nivo() const
@@ -112,6 +62,7 @@ QDataStream& operator<<(QDataStream &out,Brak& brak)
     out << qint32(brak.SifraNase());
     out << qint32(brak.SifraTudje());
     out << brak._trivija;
+    out << qint32(brak._nivo);
     return out;
 }
 
@@ -126,6 +77,8 @@ QDataStream& operator>>(QDataStream &in,Brak& brak)
     in >> broj;
     brak._sifraTudje=(short)broj;
     in >> brak._trivija;
+    in >> broj;
+    brak._nivo = short(broj);
     return in;
 }
 

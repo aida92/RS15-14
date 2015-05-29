@@ -2,12 +2,13 @@
 #include <QDataStream>
 #include <iostream>
 #include "alati/trazenjeputa.h"
+#include <QMessageBox>
 
 PorodicnoStablo::PorodicnoStablo()
 {
-    _kljucnaOsoba = new Osoba();
+    _kljucnaOsoba = nullptr;
     InicijalizujSveStrukture();
-    (_indeksSifraOsobe[_kljucnaOsoba->Sifra()])=_kljucnaOsoba;
+
 }
 
 PorodicnoStablo::PorodicnoStablo(const QString &ime, const QString &prezime, const QString &pol,
@@ -21,8 +22,8 @@ PorodicnoStablo::PorodicnoStablo(const QString &ime, const QString &prezime, con
     _indeksIme.insert(std::make_pair(ime,_kljucnaOsoba));
     if (rodjenje.isValid())
     {
-        //_indeksRodjenje.insert(std::make_pair(rodjenje, _kljucnaOsoba->Sifra()));//ubacuje pri pravljenju osobe
-        _indeksRodjendan.insert(std::make_pair(rodjenje.dayOfYear(), _kljucnaOsoba->Sifra()));//ne azurira pri promeni kasnijoj!
+
+        _indeksRodjendan.insert(std::make_pair(rodjenje.dayOfYear(), _kljucnaOsoba->Sifra()));
     }
     _indeksSifraOsobe[_kljucnaOsoba->Sifra()]=_kljucnaOsoba;
 }
@@ -32,14 +33,13 @@ PorodicnoStablo::~PorodicnoStablo()
     if (_kljucnaOsoba != nullptr)
         UkloniOsobuSifrom(_kljucnaOsoba->Sifra());
     InicijalizujSveStrukture();
-    //SpaliCeloStablo();
+
 }
 
 Osoba * PorodicnoStablo::KljucnaOsoba()
 {
     return _kljucnaOsoba;
 }
-
 
 //dodaje novu osobu u stablo,ocekuje se da posle poziva sledi i poziv za dodavanje deteta ili braka, da bi stablo bilo povezano u svakom momentu!!!
 short int PorodicnoStablo::DodajNNLice(bool krvniSrodnik)
@@ -48,16 +48,15 @@ short int PorodicnoStablo::DodajNNLice(bool krvniSrodnik)
     _indeksSifraOsobe[nova->Sifra()]=nova;
     return nova->Sifra();
 }
-short int PorodicnoStablo::DodajOsobu(const QString &ime, const QString &prezime, const QString &pol,
+short int PorodicnoStablo::DodajOsobu(const QString &ime, const QString &prezime, const QChar &pol,
                                       const QDate rodjenje, const QDate smrt, bool krvniSrodnik)
 {
-    QChar p = pol.at(0);
-    Osoba* nova=new Osoba(ime, prezime, p, rodjenje, smrt, krvniSrodnik);
+    Osoba* nova=new Osoba(ime, prezime, pol, rodjenje, smrt, krvniSrodnik);
     _indeksIme.insert(std::make_pair(ime, nova));
     if (rodjenje.isValid())
     {
-        //_indeksRodjenje.insert(std::make_pair(rodjenje, nova->Sifra()));//ubacuje pri pravljenju osobe
-        _indeksRodjendan.insert(std::make_pair(rodjenje.dayOfYear(), nova->Sifra()));//ne azurira pri promeni kasnijoj!
+
+        _indeksRodjendan.insert(std::make_pair(rodjenje.dayOfYear(), nova->Sifra()));
     }
     _indeksSifraOsobe[nova->Sifra()]=nova;
     return nova->Sifra();
@@ -70,7 +69,7 @@ short int PorodicnoStablo::DodajDete(const short int sifraBraka, const short int
 {
     //osoba je dete iz ovog braka, vec kreirana sa vrednoscu -1 za sifru roditeljskog odnosa, pa joj to postavljamo
     _indeksSifraOsobe[sifraOsobe]->PostaviRoditeljskuSifru(sifraBraka);
-    //ili si hteo da dodjes do relacije "dete"?
+
     //osobi, tj detetu dodeljujemo nivo_roditelja + 1
     short noviNivo = _indeksSifraVeza[sifraBraka]->Nivo()+1;
     _indeksSifraOsobe[sifraOsobe]->Nivo(noviNivo);
@@ -89,7 +88,7 @@ short int PorodicnoStablo::DodajDete(const short int sifraBraka, const short int
 short int PorodicnoStablo::DodajBrak(const short sifraNaseOsobe, const short sifraTudjeOsobe, const QString &trivija)
 {
     Brak *novi = new Brak(sifraNaseOsobe, sifraTudjeOsobe, trivija);
-    novi->Nivo(_indeksSifraOsobe[sifraNaseOsobe]->Nivo());//treba nam zbog racunanja nivo deteta
+    novi->Nivo(_indeksSifraOsobe[sifraNaseOsobe]->Nivo());//treba nam zbog racunanja nivoa deteta
     _indeksSifraVeza[novi->Sifra()]=novi;
     _indeksOsobaBrak.insert(std::make_pair(sifraNaseOsobe, novi->Sifra()));
     _indeksOsobaBrak.insert(std::make_pair(sifraTudjeOsobe, novi->Sifra()));
@@ -121,15 +120,11 @@ Brak* PorodicnoStablo::NadjiBrakSifrom(const short sifra)
 
 void PorodicnoStablo::UkloniOsobuSifrom(const short sifra)
 {
-    /**
-        mislim da je dovoljno da PorodicnoStablo brine o tome
-        da raskine veze i obrise sve osobe koje treba
-        a ne da to rade osobe, relacije...
-    **/
+
     std::map<short, Osoba*>::iterator iter;
     if ((iter = _indeksSifraOsobe.find(sifra)) == _indeksSifraOsobe.end())
     {
-        std::cout<<"vec je obrisana"<<std::endl;
+        //std::cout<<"vec je obrisana"<<std::endl;
         return;
     }
     Osoba *zaBrisanje=_indeksSifraOsobe[sifra];
@@ -162,14 +157,14 @@ void PorodicnoStablo::UkloniOsobuSifrom(const short sifra)
     }
     //brisemo je iz indeksa (sifra, osoba)
     _indeksSifraOsobe.erase(iter);
-    //mozda bi trebalo i iz ostalih indeksa
+
     emit obrisanaOsoba(sifra);
 
     if (!zaBrisanje->VecSeBrisem())
         delete zaBrisanje;
 }
 
-//ovo sada azurira indekse
+// azurira indekse
 void PorodicnoStablo::UkloniBrakSifrom(const short sifra)
 {
     if (_indeksSifraVeza.find(sifra) == _indeksSifraVeza.end())
@@ -180,7 +175,7 @@ void PorodicnoStablo::UkloniBrakSifrom(const short sifra)
     for (auto iter = brakovi.first; iter != brakovi.second; iter++)
     {
         if (iter->second == sifra)
-            _indeksOsobaBrak.erase(iter);//ovo valjda znaci da je za krvne srodnike uvek tacna informacija u indeksu?
+            _indeksOsobaBrak.erase(iter);//ovo znaci da je za krvne srodnike uvek tacna informacija u indeksu
     }
 }
 
@@ -269,19 +264,21 @@ std::vector<short> *PorodicnoStablo::ListaSupruznika(const short sifra)
 
 bool PorodicnoStablo::ProcitajFajl(const QString &imeFajla)
 {
-    std::cout << "Citam fajl" << imeFajla.toStdString() << std::endl;
+
     //otvaramo fajl
     QFile fajl(imeFajla);
     if (!fajl.open(QIODevice::ReadOnly)) {
-        std::cout << "Ne moze da iscita fajl" << std::endl; //bice warning
+        //std::cout << "Ne moze da iscita fajl" << std::endl; //bice warning
         return false;
     }
 
     //otvaramo ulazni stream
     QDataStream ulaz(&fajl);
 
-    ulaz.setVersion(QDataStream::Qt_4_1);// DA LI OVAJ, ILI NEKI DRUGI?? iskreno pojma nemam u kojem radimo mi zapravo
+    ulaz.setVersion(QDataStream::Qt_4_1);
 
+    mapaOsobe.clear();
+    mapaBrakovi.clear();
     SpaliCeloStablo();
 
     int maxSifraOsobe=-1;
@@ -298,7 +295,7 @@ bool PorodicnoStablo::ProcitajFajl(const QString &imeFajla)
     if (datum.isValid())
     {
         _indeksRodjendan.insert(std::make_pair(datum.dayOfYear(), _kljucnaOsoba->Sifra()));
-        //_indeksRodjenje.insert(std::make_pair(datum, _kljucnaOsoba->Sifra()));
+
     }
     if (_kljucnaOsoba->Sifra() > maxSifraOsobe)
         maxSifraOsobe = _kljucnaOsoba->Sifra();
@@ -317,7 +314,7 @@ bool PorodicnoStablo::ProcitajFajl(const QString &imeFajla)
         if (datum.isValid())
         {
             _indeksRodjendan.insert(std::make_pair(datum.dayOfYear(), o->Sifra()));
-            //_indeksRodjenje.insert(std::make_pair(datum, o->Sifra()));
+
         }
         if (o->Sifra() > maxSifraOsobe)
             maxSifraOsobe = o->Sifra();
@@ -328,7 +325,7 @@ bool PorodicnoStablo::ProcitajFajl(const QString &imeFajla)
 
     //----------------------UCITAVANJE SVIH PODATAKA O BRAKOVIMA, BEZ VEZIVANJA---------------------------//
     ulaz>>velicina;
-    //std::cout<<"procitala broj veza\n"<<(short)velicina;
+
     for (int i=0;i<(short)velicina;i++){
         Brak *b=new Brak();
         ulaz>>*b;
@@ -362,52 +359,68 @@ bool PorodicnoStablo::ProcitajFajl(const QString &imeFajla)
     Dete::postaviSledecuSifru(maxSifraDeteta+1);
     //----------------------POSTAVLJANJE STATICKOG PODATKA ZA DODELU SLEDECE SIFRE NA OSNOVU MAKSIMUMA UCITANIH------------------------//
 
-    //-----------------------------POVEZIVANJE OSOBA-----------------------------------//
 
+    //ucitavanje pozicija redom
 
-    //-----------------------------POVEZIVANJE OSOBA-----------------------------------//
+    //za osobe
+    int broj = _indeksSifraOsobe.size();
+    for (int i=0;i<broj;i++)
+    {
+        qint32 sifra;
+        qreal x, y;
+        ulaz >> sifra;
+        ulaz >> x;
+        ulaz >> y;
+        mapaOsobe[(short)sifra] = QPointF(x, y);
+    }
+    //za brakove
+    broj = _indeksSifraVeza.size();
+    for (int i=0;i<broj;i++)
+    {
+        qint32 sifra;
+        qreal x, y;
+        ulaz >> sifra;
+        ulaz >> x;
+        ulaz >> y;
+        mapaBrakovi[(short)sifra] = QPointF(x, y);
+    }
 
-
-    //-----------------------------POVEZIVANJE BRAKOVA-----------------------------------//
-
-    //-----------------------------POVEZIVANJE BRAKOVA-----------------------------------//
-
-    //-----------------------------POVEZIVANJE DECE-----------------------------------//
-
-    //-----------------------------POVEZIVANJE DECE-----------------------------------//
-
-    std::cout<<"Uspesno Procitano"<<std::endl;
+    //ucitavanje nivoa
+    ulaz >> velicina;
+    for (int i = 0; i < velicina; i++)
+    {
+        qint32 broj;
+        ulaz >> broj;
+        _nivoi.push_back((int)broj);
+    }
     fajl.close();
     return true;
 }
 
 
 
-bool PorodicnoStablo::IspisiFajl(const QString &imeFajla)//cuvam samo podatke koji su mi potrebni, da bi fajlovi bili manji
-{//time gubim na performansama pri ucitavanju, ali posto je cuvanje bitnije od ucitavanja (koje radimo prilicno retko), deluje mi bolje ovako
-
-    std::cout << "Pisem u fajl"<<std::endl;
+bool PorodicnoStablo::IspisiFajl(const QString &imeFajla)//samo podaci koji su potrebni da se kasnije sve rekonstruise
+{
+    if (_kljucnaOsoba == nullptr){
+        return false;
+    }
     QFile fajl(imeFajla);
     if (!fajl.open(QIODevice::WriteOnly)) {
-        std::cout << "Ne moze da upise u fajl" << std::endl; //bice warning
+        //std::cout << "Ne moze da upise u fajl" << std::endl; //bice warning
         return false;
     }
     QDataStream izlaz(&fajl);
-    izlaz.setVersion(QDataStream::Qt_4_1);// DA LI OVAJ, ILI NEKI DRUGI?? iskreno pojma nemam u kojem radimo mi zapravo
+    izlaz.setVersion(QDataStream::Qt_4_1);
 
-    izlaz <<* _kljucnaOsoba;
-    std::cout<<"ispisala kjucnu\n";
+        izlaz <<* _kljucnaOsoba;
 
-    //std::cout << "imam osoba " << _indeksSifraOsobe.size() << std::endl;
     //Kljucnu smo vec upisali
     izlaz << (qint32)(_indeksSifraOsobe.size()-1);
-    // std::cout<<"ispisala velicinu vektora osoba\n"<<_indeksSifraOsobe.size();
 
     for(auto osoba :_indeksSifraOsobe)
     {
         if ((osoba.second)->Sifra() != _kljucnaOsoba->Sifra())
             izlaz<<(*(osoba.second));
-        //   std::cout<<"ispisala osobu\n";
     }
 
     izlaz << (qint32)_indeksSifraVeza.size();
@@ -416,7 +429,7 @@ bool PorodicnoStablo::IspisiFajl(const QString &imeFajla)//cuvam samo podatke ko
     for(auto brak :_indeksSifraVeza)
     {
         izlaz<<(*brak.second);
-        //  std::cout<<"ispisala vezu\n";
+        //  //std::cout<<"ispisala vezu\n";
 
     }
 
@@ -426,10 +439,34 @@ bool PorodicnoStablo::IspisiFajl(const QString &imeFajla)//cuvam samo podatke ko
     for(auto dete :_indeksSifraDete)
     {
         izlaz<<(*dete.second);
-        //  std::cout<<"ispisala decu\n";
+        //  //std::cout<<"ispisala decu\n";
     }
+
+    //pozicije redom
+
+    //osobe
+    for (auto o : mapaOsobe)
+    {
+        izlaz << (qint32)o.first;
+        izlaz << (qreal)o.second.x();
+        izlaz << (qreal)o.second.y();
+    }
+    //brakove
+    for (auto b : mapaBrakovi)
+    {
+        if (_indeksSifraVeza.find(b.first) == _indeksSifraVeza.end())
+            continue;//za svaki slucaj
+        izlaz << (qint32)b.first;
+        izlaz << (qreal)b.second.x();
+        izlaz << (qreal)b.second.y();
+    }
+
+    // _nivoe
+    izlaz << (qint32)_nivoi.size();
+    for (auto n : _nivoi)
+        izlaz << (qint32)n;
+
     fajl.close();
-    std::cout<<"Uspesno ispisano" << std::endl;
     return true;
 }
 
@@ -442,7 +479,6 @@ void PorodicnoStablo::InicijalizujSveStrukture()
     _indeksBrakDeca.clear();
     _indeksOsobaBrak.clear();
     _indeksRodjendan.clear();
-    //_indeksRodjenje.clear();
     _nivoi.clear();
 }
 
@@ -457,7 +493,7 @@ void PorodicnoStablo::ObrisiBrakove(short sifra, bool iSupruznike)//brise brakov
 {
     //ako je true, pozivamo brisanje samog supruznika (koji ce posle obrisati brak)
     //ako je false brisemo samo relaciju brak
-    //vrv moze bolje
+    //vrv ne moze bolje
 
 
     if (iSupruznike)
@@ -533,7 +569,7 @@ void PorodicnoStablo::azurirajIndeksRodj(const QDate &stari, const QDate &novi, 
 }
 
 std::vector<short> *PorodicnoStablo::KomeJeSveRodjendan(const QDate &datum)
-{// std::multimap<int, short> _indeksRodjendan;
+{
     std::vector<short> *slavljenici = new std::vector<short>();
     auto sl = _indeksRodjendan.equal_range(datum.dayOfYear());
     auto iter = sl.first;
@@ -558,26 +594,25 @@ std::vector<short> PorodicnoStablo::sifreNaPutuOdOsobeDoOsobe(int sifraPocetne,i
     return Put;
 }
 
-
-std::map<short, Osoba*> PorodicnoStablo::Osobe()
+std::map<short, Osoba*>& PorodicnoStablo::Osobe()
 {
     return _indeksSifraOsobe;
 }
-std::map<short, Brak*> PorodicnoStablo::Brakovi()
+std::map<short, Brak*>& PorodicnoStablo::Brakovi()
 {
     return _indeksSifraVeza;
 }
-std::map<short, Dete*> PorodicnoStablo::Deca()
+std::map<short, Dete*> &PorodicnoStablo::Deca()
 {
     return _indeksSifraDete;
 }
 
-const std::multimap<short, short>& PorodicnoStablo::OsobaBrak()const
+std::multimap<short, short>& PorodicnoStablo::OsobaBrak()
 {
     return _indeksOsobaBrak;
 }
 
-const std::multimap<short, short>& PorodicnoStablo::BrakDeca() const
+std::multimap<short, short>& PorodicnoStablo::BrakDeca()
 {
     return _indeksBrakDeca;
 }
@@ -585,6 +620,7 @@ const std::multimap<short, short>& PorodicnoStablo::BrakDeca() const
 std::vector<int> PorodicnoStablo::Nivoi()
 {
     return _nivoi;
+
 }
 std::vector<short>* PorodicnoStablo::PretragaPoImenu(const QString& Ime,int tip){
     std::vector<short> *Osobe= new std::vector<short>();
@@ -714,7 +750,7 @@ bool PorodicnoStablo::jeDeteOd(short sifraPrve, short sifraDruge)
         auto it2=pp2.first;
         for(;it2!=pp2.second;++it2){
 
-            if(NadjiDeteSifrom((*it2).second)->SifraOsobe()==sifraDruge)return true;
+            if((*it2).second==sifraDruge)return true;
         }
     }
     return false;
@@ -745,17 +781,41 @@ bool PorodicnoStablo::jeBratSestraOd(short sifraPrve, short sifraDruge)
 
     for(;it!=ie;++it)
     {
-        if(jeDeteOd(sifraPrve,(*it).first))
+        if(jeRoditeljOd(sifraPrve,(*it).first))
         {
             sifraOca=(*it).first;
             break;
         }
     }
 
-    if(sifraOca!=-1 && jeDeteOd(sifraDruge,sifraOca))return true;
+    if(sifraOca!=-1 && jeRoditeljOd(sifraDruge,sifraOca))return true;
 
 
     return false;
 }
-
+//ovo se poziva iz GUIja kako bi bile zapamcene i koordinate svakog elementa u fajl
+void PorodicnoStablo::zapamtiPozicijeOsoba(std::map<short, QPointF> &mapa)
+{
+    mapaOsobe.clear();
+    mapaOsobe = mapa;
+   // for (auto m : mapa)
+        //std::cout << m.first << " ";
+    //std::cout <<"gotovo" <<std::endl;
+}
+void PorodicnoStablo::zapamtiPozicijeBrakova(std::map<short, QPointF> &mapa)
+{
+    mapaBrakovi.clear();
+    mapaBrakovi = mapa;
+  //  for (auto m : mapa)
+        //std::cout << m.first << " ";
+    //std::cout <<"gotovo" <<std::endl;
+}
+std::map<short, QPointF>& PorodicnoStablo::vratiPozicijeOsoba()
+{
+    return mapaOsobe;
+}
+std::map<short, QPointF>& PorodicnoStablo::vratiPozicijeBrakova()
+{
+    return mapaBrakovi;
+}
 

@@ -15,11 +15,11 @@ public:
     short SifraOsobe();
     short SifraRoditeljskogOdnosa();
     const QString& Trivija() const;
-    //  QDate& DatumUsvajanja();
+
 
     static void postaviSledecuSifru(int sifra);
-    bool VecSeBrisem();
-    void PreskociRazvezivanje();
+
+
 
     friend QDataStream& operator<<(QDataStream &out,Dete& dete);
     friend QDataStream& operator>>(QDataStream &in,Dete& dete);
@@ -28,9 +28,8 @@ private:
     static short int _sledecaSifra;
     short int _sifra, _sifraOsobe, _sifraRoditeljskeVeze;
     QString _trivija;
-    //   QDate _datumUsvajanja;
-    bool _vecSeBrisem=false;
-    bool _preskociRazvezivanje=false;
+
+
 };
 
 #endif // DETE_H

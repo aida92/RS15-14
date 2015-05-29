@@ -5,7 +5,6 @@
 #include <QGraphicsView>
 #include <QPoint>
 #include <QMouseEvent>
-#include <QDebug>
 
 class Stablo : public QGraphicsView
 {

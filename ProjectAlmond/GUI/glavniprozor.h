@@ -35,7 +35,7 @@ private:
     Ui::GlavniProzor *ui;
 
     QButtonGroup *grpToolBar;
-    QPushButton *tbOsoba, *tbMuzZena, *tbBratSestra, *tbRoditeljDete, *tbPomeranje, *tbDetalji, *tbBrisi, *tbMenjaj, *tbUredi;
+    QPushButton *tbOsoba, *tbMuzZena, *tbBratSestra, *tbRoditeljDete, *tbPomeranje, *tbDetalji, *tbBrisi, *tbMenjaj, *tbUredi,*tbSrodstvo;
     QToolBar *toolbar;
     QLabel *Labela;
     PorodicnoStablo *stablo;
@@ -48,7 +48,10 @@ private:
     QString otvoreniFajl;
     QTranslator *translator;
 
-    std::map<short int, GOsoba*> _pozicijeOsoba;//<sifra_osobe, GOsoba>
+
+    std::map<short int, GOsoba*> _osobe;
+    std::map<short, GRelacija*> _brakovi;
+    std::map<short int, QPointF> _pozicijeOsoba;//<sifra_osobe, pozicija>
     std::map<short int, QPointF> _pozicijeBrakova;//<sifra_braka, pozicija>
 
     QPushButton *kreirajJedanAlat(QPushButton *alat, const char *ime, const char *info);
@@ -61,7 +64,7 @@ private:
     void obnoviSkoroOtvarane();//recentFileList
     bool otvoriFajl(const QString &imeFajla);//otvaranje fajla
     void postaviTrenutniFajl(const QString &imeFajla);
-    void writeSettings();//cuva pozicije widgeta, recent files, itd... Smisliti prevod imena :)
+    void writeSettings();//cuva pozicije widgeta, recent files...
     void readSettings();//cita ovo gore pri konstrukciji
 
     void RekonstruisiStablo();//nakon sto podatke ucitamo u enginu
@@ -72,8 +75,7 @@ private:
     short ukloniOsobu(short sifra);
     short dodajNovoDete(GRelacija *brak, GOsoba *dete);
     short dodajNoviBrak(GOsoba *prva, GOsoba *druga);
-    //GRelacija* dodajNovoDete(GRelacija *brak, GOsoba *dete);
-    //GRelacija* dodajNoviBrak(GOsoba *prva, GOsoba *druga);
+
 
     Stablo *pogled;
     QGraphicsScene *scena;
@@ -106,11 +108,14 @@ public Q_SLOTS:
     void vucenoStablo(QPoint prva, QPoint druga);
     void urediStablo();
     //-----INTERAKCIJA-----//
-    //-----Menjanje prikazanih osoba-----//
-    void prikaziSlavljenike(const QDate &datum);
-    void prikaziSakrijTudje();
+
 
     void izvrsiPretragu();
+    //ovo dole se poziva kada se neki brak obrise
+    void izbrisiVezuIzIndeksa(short sifra);
+    //kreiranje kljucne osobe, to je moguce samo kada je stablo prazno
+    //na samom pocetku ili kada se tokom rada izbrise kljucna, a to znaci celo stablo
+    void napraviKljucnuOsobu();
 };
 
 #endif // GLAVNIPROZOR_H

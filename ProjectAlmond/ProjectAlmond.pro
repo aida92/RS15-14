@@ -13,7 +13,6 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    alati/datum.cpp \
     engine/osoba.cpp \
     engine/porodicnostablo.cpp \
     GUI/dialognovaosoba.cpp \
@@ -30,7 +29,6 @@ SOURCES += main.cpp\
     GUI/dijalogpretrage.cpp
 
 HEADERS  += \
-    alati/datum.h \
     engine/osoba.h \
     engine/porodicnostablo.h \
     GUI/dialognovaosoba.h \
@@ -58,7 +56,7 @@ RESOURCES += \
     jezici.qrc
 TRANSLATIONS += \
     ProjectAlmond_en.ts \
-    ProjectAlmond_gr.ts \
+    ProjectAlmond_de.ts \
     ProjectAlmond_es.ts \
     ProjectAlmond_sr.ts
 

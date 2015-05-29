@@ -15,14 +15,12 @@ class GOsoba : public QObject, public QGraphicsItem
 public:
     enum { Type = UserType + 1 };
 
-    enum Stil { OBICNA = 0, KORENA = 2, SELEKTOVANA = 4, POKOJNA = 8, NEPOZNATA = 16, SLAVLJENIK = 32};
+    enum Stil { MUSKA = 0, ZENSKA=1, KORENA = 2, SELEKTOVANA = 4, NASA = 8, NEPOZNATA=16, ODABRANA = 32};
 
     GOsoba(short int sifra, QString ime_prezime);
     ~GOsoba();
 
     QRectF boundingRect() const override;
-
-    //QPainterPath shape() const override;
 
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
@@ -30,13 +28,18 @@ public:
 
     int type() const;
 
+    void hoverEnterEvent(QGraphicsSceneHoverEvent * event)override;
+
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent * event)override;
+
     short int Sifra() const;
 
     void promeniIme(const QString &novoIme);
 
     void obavestiRelacije();
 
-    void promeniStil(Stil stil);
+    void dodajStil(Stil stil);
+    void oduzmiStil(Stil stil);
 
 signals:
     void pomerilaSe(QPointF);
@@ -49,6 +52,7 @@ private:
     int _sirina, _visina;
     QString _ime;
     QColor _osnovnaBoja = Qt::darkGreen;
+    QColor _bojaTeksta = Qt::green;
     unsigned _ukljuceniFlegovi;
 };
 

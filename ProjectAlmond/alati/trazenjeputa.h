@@ -3,9 +3,11 @@
 #include <vector>
 #include <map>
 #include <QString>
+
 #include "engine/porodicnostablo.h"
-class TrazenjePuta
+class TrazenjePuta:public QObject
 {
+    Q_OBJECT
 public:
     /*!
      * \brief TrazenjePuta kreira objekat za trazenje puteva i odnosa u stablu
@@ -21,7 +23,7 @@ public:
      * \param sifraTrazene  sifra osobe koja se trazi
      * \return vraca vektor sifara osoba na rodjackoj liniji izmedju dve date osobe, ukljucujuci i njih same
      */
-    std::vector<short> operator()(short sifraPocetne,short sifraTrazene)const;
+    std::vector<short>& operator()(short sifraPocetne,short sifraTrazene);
 
     /*!
      * \brief tipSrodstva Odredjuje tip srodstva jedne osobe u odnosu na drugu
@@ -29,7 +31,12 @@ public:
      * \param sifraTrazene sifra osobe za koju zelimo da odredimo u kom je srodstvu
      * \return QString koji se moze prevesti na razlicite jezike, u zavisnosti od interpretacije
      */
-    QString tipSrodstva(short sifraPocetne,short sifraTrazene)const;
+    QString tipSrodstva(short sifraPocetne,short sifraTrazene);
+
+    /*!
+     * \brief OsveziMatricuPuteva Na osnovu trenutnih podataka u stablu kreira matricu najkracih puteva izmedju cvorova
+     */
+    void OsveziMatricuPuteva();
 
 private:
     /*!
@@ -49,24 +56,31 @@ private:
      * \brief _sifre spisak svih sifara trenutno postojecih osoba, za koji su vezani ostali podaci
      */
     short *_sifre;
+
     /*!
-     * \brief OsveziMatricuPuteva Na osnovu trenutnih podataka u stablu kreira matricu najkracih puteva izmedju cvorova
+     * \brief _n dimenzija matrice puteva
      */
-    void OsveziMatricuPuteva();
+    int _n;
+
+    /*!
+     * \brief _put vektor u kojem se nalaze trenutne informacije o putu izmedju dve osobe
+     */
+    std::vector<short> _put;
+
 
     /*!
      * \brief InicijalizujMatricu dealocira prethodnu matricu ako postoji i alocira novu, popunjenu sa -1
      * \param m matrica koju treba inicijalizovati
      * \param n dimenzija matrice, odnosno broj osoba
      */
-    void InicijalizujMatricu(short **m,int n);
+    void InicijalizujMatricu(short ***m, int n);
 
     /*!
      * \brief rBr pretraga po sifri u nizu svih
      * \param sifra data sifra koju treba naci
      * \return Vraca redni broj u nizu sifara _sifra, date sifre
      */
-    int rBr(const short sifra)const;
+    int rBr(short sifra)const;
 
 };
 

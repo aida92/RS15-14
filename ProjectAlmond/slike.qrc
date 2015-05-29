@@ -5,12 +5,13 @@
         <file>images/Menjaj.ico</file>
         <file>images/NovaOsoba.ico</file>
         <file>images/Pomeri.ico</file>
-        <file>images/RelacijaBratSestra.ico</file>
         <file>images/RelacijaDete.ico</file>
         <file>images/RelacijaSupruznici.ico</file>
         <file>images/Ukloni.ico</file>
         <file>images/UrediStablo.ico</file>
         <file>images/DeteUokvireno.png</file>
         <file>images/BrakUokviren.png</file>
+        <file>images/Srodstvo.ico</file>
+        <file>images/SplashScreen.png</file>
     </qresource>
 </RCC>

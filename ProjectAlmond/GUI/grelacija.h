@@ -19,7 +19,7 @@ public:
     GRelacija(short sifra, QPointF prva, QPointF druga, bool brak);
     ~GRelacija();
 
-    //QPainterPath shape() const;
+    QPainterPath shape() const;
 
     QRectF boundingRect() const override;
 
@@ -39,6 +39,7 @@ public Q_SLOTS:
 
 signals:
     void pomerilaSe(QPointF);
+    void obrisiMe(short);
 
 private:
     short _sifra;
